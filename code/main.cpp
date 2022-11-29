@@ -35,13 +35,14 @@ arma::mat construct_matrix(arma::vec a, double r, int n)
   int N2 = n*n;
   int j = 0;
   arma::mat central_submatrix = arma::mat(n, n);
-  arma::mat offdiag_submatrix = -222*arma::eye(n, n);
+  arma::mat offdiag_submatrix = -r*arma::eye(n, n);
   arma::mat big_matrix = arma::mat(N2, N2);
 
-  //sett første matrise
   central_submatrix = arma::diagmat(a(arma::span(0, n-1)));
   central_submatrix.diag(1) = -r*arma::ones(n-1);
   central_submatrix.diag(-1) = -r*arma::ones(n-1);
+
+  big_matrix(arma::span(0, n-1), arma::span(0, n-1)) = central_submatrix; //sett første matrise
 
   for (int i = 1; i<n; i++){
       j = i*n;
@@ -50,9 +51,10 @@ arma::mat construct_matrix(arma::vec a, double r, int n)
      central_submatrix.diag(-1) = -r*arma::ones(n-1);
 
      big_matrix(arma::span(j, j+n-1), arma::span(j, j+n-1)) = central_submatrix;
-     big_matrix(arma::span(j-n, j-1), arma::span(j-1, j+n-2)) = offdiag_submatrix;
+     big_matrix(arma::span(j-n, j-1), arma::span(j, j+n-1)) = offdiag_submatrix;
+     big_matrix(arma::span(j, j+n-1), arma::span(j-n, j-1)) = offdiag_submatrix;
 
-    //std::cout << i << std::endl;
+
     //big_matrix(arma::span(i*n-1, i*n+1), arma::span(i*n-1, i*n+1)) = central_submatrix;
   }
 
