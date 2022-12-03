@@ -18,7 +18,9 @@ int main(int argc, char *argv[])
     //   arma::cx_mat A =  construct_matrix(a, r,  n, 'A');
     //   std::cout << A << std::endl;
 
-    arma::cx_mat A = generate_matrix(5, 1, 1, arma::cx_mat(1, 1));
+    arma::cx_mat V = arma::cx_mat(3, 3, arma::fill::randn);
+    std::cout << V << std::endl;
+    arma::cx_mat A = generate_matrix(5, 1, 1, V, 'A');
     std::cout << A << std::endl;
 
     return 0;

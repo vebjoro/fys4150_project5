@@ -4,5 +4,5 @@
 #include <armadillo>
 
 int k(int i, int j, int M);
-arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V);
+arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char sign);
 #endif // STATE_CN_

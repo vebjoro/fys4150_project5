@@ -3,37 +3,83 @@
 #include <armadillo>
 
 int k(int i, int j, int M)
-// Translate inner matrix indicies to a single index
+// Translate matrix indicies to a single index
 {
-    return (i - 1) + (j - 1) * M;
+    return i + j * M;
 };
 
-arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V)
+arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char sign)
 {
+    // Edge length
     int N = (M - 2) * (M - 2);
-    arma::mat real = arma::mat(N, N, arma::fill::zeros);
-    arma::mat imag = arma::mat(N, N, arma::fill::zeros);
 
-    double r_imag = dt / (2 * h * h);
-    imag.diag(3) = r_imag * arma::ones(N - 3);
-    imag.diag(-3) = r_imag * arma::ones(N - 3);
-    imag.diag(1) = r_imag * arma::ones(N - 1);
-    imag.diag(-1) = r_imag * arma::ones(N - 1);
+    // Filling the matrix with r values
+    arma::cx_mat A = arma::cx_mat(N, N, arma::fill::zeros);
 
+    double r = dt / (2 * h * h);
+    // Fill vector with r values
+    arma::cx_vec r_vec;
+    if (sign == 'B')
+    {
+
+        r_vec = arma::cx_vec(N - 3, arma::fill::ones);
+        r_vec = -r * r_vec;
+        A.diag(3) = r_vec;
+        A.diag(-3) = r_vec;
+
+        r_vec = arma::cx_vec(N - 1, arma::fill::ones);
+        r_vec = -r * r_vec;
+        A.diag(1) = r_vec;
+        A.diag(-1) = r_vec;
+
+        arma::cx_double a = 1 + 4 * r + arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
+    }
+    else
+    {
+        r_vec = arma::cx_vec(N - 3, arma::fill::ones);
+        r_vec = r * r_vec;
+        A.diag(3) = r_vec;
+        A.diag(-3) = r_vec;
+
+        r_vec = arma::cx_vec(N - 1, arma::fill::ones);
+        r_vec = r * r_vec;
+        A.diag(1) = r_vec;
+        A.diag(-1) = r_vec;
+    }
+
+    // Removing corner r values (!verify this)
     for (int i = (M - 2); i < N; i += M - 2)
     {
-        imag(i - 1, i) = 0;
-        imag(i, i - 1) = 0;
+        A(i - 1, i) = arma::cx_double{0, 0};
+        A(i, i - 1) = arma::cx_double{0, 0};
     }
-    arma::cx_mat A = arma::cx_mat(real, imag);
 
-    for (int i = 0; i < M - 2; i++)
+    // Filling the diagonal
+    arma::cx_vec diagonal = arma::cx_vec(N);
+    arma::cx_double a = 1 + 4 * r + arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
+    arma::cx_double b = 1 - 4 * r - arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
+    if (sign == 'B')
     {
         for (int j = 0; j < M - 2; j++)
         {
-            A(i, j) += V(k(i, j, M));
+
+            for (int i = 0; i < M - 2; i++)
+            {
+                diagonal(k(i, j, M - 2)) = b * V(i, j);
+            }
         }
     }
-}
-return A;
+    else
+    {
+        for (int j = 0; j < M - 2; j++)
+        {
+
+            for (int i = 0; i < M - 2; i++)
+            {
+                diagonal(k(i, j, M - 2)) = a * V(i, j);
+            }
+        }
+    }
+    A.diag() = diagonal;
+    return A;
 }
