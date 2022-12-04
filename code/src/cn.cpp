@@ -31,8 +31,6 @@ arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char si
         r_vec = -r * r_vec;
         A.diag(1) = r_vec;
         A.diag(-1) = r_vec;
-
-        arma::cx_double a = 1 + 4 * r + arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
     }
     else
     {
@@ -56,13 +54,12 @@ arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char si
 
     // Filling the diagonal
     arma::cx_vec diagonal = arma::cx_vec(N);
-    arma::cx_double a = 1 + 4 * r + arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
-    arma::cx_double b = 1 - 4 * r - arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
+    arma::cx_double a = arma::cx_double{1, 0} + arma::cx_double{4, 0} * r + arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
+    arma::cx_double b = arma::cx_double{1, 0} - arma::cx_double{4, 0} * r - arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
     if (sign == 'B')
     {
         for (int j = 0; j < M - 2; j++)
         {
-
             for (int i = 0; i < M - 2; i++)
             {
                 diagonal(k(i, j, M - 2)) = b * V(i, j);
@@ -73,7 +70,6 @@ arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char si
     {
         for (int j = 0; j < M - 2; j++)
         {
-
             for (int i = 0; i < M - 2; i++)
             {
                 diagonal(k(i, j, M - 2)) = a * V(i, j);
@@ -82,4 +78,49 @@ arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char si
     }
     A.diag() = diagonal;
     return A;
+}
+
+// (!The above code should be implemented in below struct?)
+crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
+{
+
+    h = 1 / xy_steps;
+    M = xy_steps;
+    dt = time_step;
+    T = time;
+}
+
+void crank_nicolson::init_state_params(
+    arma::cx_double x_c_,
+    arma::cx_double sigma_x_,
+    arma::cx_double p_x_,
+    arma::cx_double y_c_,
+    arma::cx_double sigma_y_,
+    arma::cx_double p_y_,
+    arma::cx_double v_0_)
+{
+    x_c = x_c_;
+    sigma_x = sigma_x_;
+    p_x = p_x_;
+    y_c = y_c_;
+    sigma_y = sigma_y_;
+    p_y = p_y_;
+    v_0 = v_0_;
+}
+
+void crank_nicolson::init_state(arma::cx_mat &V, arma::cx_mat &V_new)
+{
+    // Initialize the state
+    for (int j = 0; j < M - 2; j++)
+    {
+        for (int i = 0; i < M - 2; i++)
+        {
+            double x = i * h;
+            double y = j * h;
+            V(i, j) = exp(-pow(x - x_c, 2) / (arma::cx_double{2, 0} \
+            * sigma_x * sigma_x) - pow(y - y_c, 2) / (arma::cx_double{2, 0} * sigma_y * sigma_y) \
+            + arma::cx_double{0, 1} * p_x * (x - x_c) + arma::cx_double{0, 1} * p_y * (y - y_c));
+        }
+    }
+    V_new = V;
 }
