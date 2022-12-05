@@ -1,6 +1,7 @@
 #include "cn.hpp"
 #include <iostream>
 #include <armadillo>
+#include <complex>
 
 int k(int i, int j, int M)
 // Translate matrix indicies to a single index
@@ -108,7 +109,7 @@ void crank_nicolson::init_state_params(
     v_0 = v_0_;
 }
 
-void crank_nicolson::init_state(arma::cx_mat &V, arma::cx_mat &V_new)
+void crank_nicolson::init_state(arma::cx_mat &U, arma::cx_mat &U_new)
 {
     // Initialize the state
     for (int j = 0; j < M - 2; j++)
@@ -117,10 +118,35 @@ void crank_nicolson::init_state(arma::cx_mat &V, arma::cx_mat &V_new)
         {
             double x = i * h;
             double y = j * h;
-            V(i, j) = exp(-pow(x - x_c, 2) / (arma::cx_double{2, 0} \
+            U(i, j) = exp(-pow(x - x_c, 2) / (arma::cx_double{2, 0} \
             * sigma_x * sigma_x) - pow(y - y_c, 2) / (arma::cx_double{2, 0} * sigma_y * sigma_y) \
-            + arma::cx_double{0, 1} * p_x * (x - x_c) + arma::cx_double{0, 1} * p_y * (y - y_c));
+            + arma::cx_double{0, 1} * p_x * (x - x_c) \
+            + arma::cx_double{0, 1} * p_y * (y - y_c));
         }
     }
-    V_new = V;
+
+    // Normalize state
+    arma::cx_double pp;
+    double norm = 0;
+    for (int j = 0; j < M - 2; j++)
+    {
+        for (int i = 0; i < M - 2; i++)
+        {
+            pp = U(i, j) * conj(U(i, j));
+            norm += pp.real();
+        }
+    }
+
+    for (int j = 0; j < M - 2; j++)
+    {
+        for (int i = 0; i < M - 2; i++)
+        {
+            U(i, j) = U(i, j) / sqrt(norm);
+        }
+    }
+
+
+
+    U_new = U;
+
 }
