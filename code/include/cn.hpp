@@ -4,7 +4,7 @@
 #include <armadillo>
 
 int k(int i, int j, int L);
-arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char sign);
+ 
 
 struct crank_nicolson
 {
@@ -12,9 +12,16 @@ struct crank_nicolson
     double M;
     double dt;
     double T;
+    double N;
+    arma::cx_double r;
+    arma::cx_double a;
+    arma::cx_double b;
+
 
     arma::cx_mat V;
     arma::cx_mat U;
+    arma::cx_mat A;
+    arma::cx_mat B;
 
     arma::cx_double x_c;
     arma::cx_double sigma_x;
@@ -37,6 +44,12 @@ struct crank_nicolson
 
     void init_state();
 
+    void generate_A_B();
+
+    void update_A_B();
+
     void potential(int slits);
+
+    void update_U();
 };
 #endif // STATE_CN_

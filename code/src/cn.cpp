@@ -9,89 +9,25 @@ int k(int i, int j, int L)
     return i + j * L;
 };
 
-arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char sign)
-{
-    // Edge length
-    int N = (M - 2) * (M - 2);
 
-    // Filling the matrix with r values
-    arma::cx_mat A = arma::cx_mat(N, N, arma::fill::zeros);
-
-    double r = dt / (2 * h * h);
-    // Fill vector with r values
-    arma::cx_vec r_vec;
-    if (sign == 'B')
-    {
-
-        r_vec = arma::cx_vec(N - 3, arma::fill::ones);
-        r_vec = -r * r_vec;
-        A.diag(3) = r_vec;
-        A.diag(-3) = r_vec;
-
-        r_vec = arma::cx_vec(N - 1, arma::fill::ones);
-        r_vec = -r * r_vec;
-        A.diag(1) = r_vec;
-        A.diag(-1) = r_vec;
-    }
-    else
-    {
-        r_vec = arma::cx_vec(N - 3, arma::fill::ones);
-        r_vec = r * r_vec;
-        A.diag(3) = r_vec;
-        A.diag(-3) = r_vec;
-
-        r_vec = arma::cx_vec(N - 1, arma::fill::ones);
-        r_vec = r * r_vec;
-        A.diag(1) = r_vec;
-        A.diag(-1) = r_vec;
-    }
-
-    // Removing corner r values (!verify this)
-    for (int i = (M - 2); i < N; i += M - 2)
-    {
-        A(i - 1, i) = arma::cx_double{0, 0};
-        A(i, i - 1) = arma::cx_double{0, 0};
-    }
-
-    // Filling the diagonal
-    arma::cx_vec diagonal = arma::cx_vec(N);
-    arma::cx_double a = arma::cx_double{1, 0} + arma::cx_double{4, 0} * r + arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
-    arma::cx_double b = arma::cx_double{1, 0} - arma::cx_double{4, 0} * r - arma::cx_double{0, 1} * dt / arma::cx_double{2, 0};
-    if (sign == 'B')
-    {
-        for (int j = 0; j < M - 2; j++)
-        {
-            for (int i = 0; i < M - 2; i++)
-            {
-                diagonal(k(i, j, M - 2)) = b * V(i, j);
-            }
-        }
-    }
-    else
-    {
-        for (int j = 0; j < M - 2; j++)
-        {
-            for (int i = 0; i < M - 2; i++)
-            {
-                diagonal(k(i, j, M - 2)) = a * V(i, j);
-            }
-        }
-    }
-    A.diag() = diagonal;
-    return A;
-}
 
 // (!The above code should be implemented in below struct?)
 crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
 {
-
     h = 1 / xy_steps;
     M = xy_steps;
     dt = time_step;
     T = time;
+    N = (M - 2) * (M - 2);
+    r = arma::cx_double{0,1} * dt / (2 * h * h);
+    a = arma::cx_double{1, 0} + arma::cx_double{4, 0} * r; // 1 + 4r
+    b = arma::cx_double{1, 0} - arma::cx_double{4, 0} * r; // 1 - 4r
 
     V = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
     U = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
+
+    A = arma::cx_mat(N, N, arma::fill::zeros);
+    B = arma::cx_mat(N, N, arma::fill::zeros);
     
 }
 
@@ -152,6 +88,65 @@ void crank_nicolson::init_state()
 
 }
 
+// int M, double h, double dt, arma::cx_mat V, char sign
+void crank_nicolson::generate_A_B()
+{
+    // Fill vector with r values
+    arma::cx_vec r_vec;
+
+    r_vec = arma::cx_vec(N - 3, arma::fill::ones);
+    r_vec = r * r_vec;
+    A.diag(3) = r_vec;
+    A.diag(-3) = r_vec;
+
+    r_vec = arma::cx_vec(N - 1, arma::fill::ones);
+    r_vec = r * r_vec;
+    A.diag(1) = r_vec;
+    A.diag(-1) = r_vec;
+
+    r_vec = arma::cx_vec(N - 3, arma::fill::ones);
+    r_vec = -r * r_vec;
+    B.diag(3) = r_vec;
+    B.diag(-3) = r_vec;
+
+    r_vec = arma::cx_vec(N - 1, arma::fill::ones);
+    r_vec = -r * r_vec;
+    B.diag(1) = r_vec;
+    B.diag(-1) = r_vec;
+
+
+    // Removing corner r values (!verify this)
+    for (int i = (M - 2); i < N; i += M - 2)
+    {
+        A(i - 1, i) = arma::cx_double{0, 0};
+        A(i, i - 1) = arma::cx_double{0, 0};
+        B(i - 1, i) = arma::cx_double{0, 0};
+        B(i, i - 1) = arma::cx_double{0, 0};
+    }
+
+    update_A_B();
+}
+
+void crank_nicolson::update_A_B()
+{
+    arma::cx_vec diagonal_a = arma::cx_vec(N);
+    arma::cx_vec diagonal_b = arma::cx_vec(N);
+
+
+    for (int j = 0; j < M - 2; j++)
+    {
+        for (int i = 0; i < M - 2; i++)
+        {
+            diagonal_a(k(i, j, M - 2)) = a + (arma::cx_double{0, 1} * dt / arma::cx_double{2, 0}) * V(i, j);
+            diagonal_b(k(i, j, M - 2)) = b - (arma::cx_double{0, 1} * dt / arma::cx_double{2, 0}) * V(i, j);
+
+        }
+    }
+
+    A.diag() = diagonal_a;
+    B.diag() = diagonal_b;
+}
+
 // Define potential
 void crank_nicolson::potential(int slits)
 {
@@ -207,3 +202,10 @@ void crank_nicolson::potential(int slits)
 }
 
 
+void crank_nicolson::update_U()
+{
+    arma::cx_mat U_new = arma::cx_mat(M - 2, M - 2);
+    arma::cx_vec u_vec = arma::cx_vec(N);
+    U_new = arma::solve(A, B * U);
+    U = U_new;
+}
