@@ -13,6 +13,9 @@ struct crank_nicolson
     double dt;
     double T;
 
+    arma::cx_mat V;
+    arma::cx_mat U;
+
     arma::cx_double x_c;
     arma::cx_double sigma_x;
     arma::cx_double p_x;
@@ -32,6 +35,8 @@ struct crank_nicolson
         arma::cx_double p_y,
         arma::cx_double v_0);
 
-    void init_state(arma::cx_mat &V, arma::cx_mat &V_new);
+    void init_state();
+
+    void potential(int slits);
 };
 #endif // STATE_CN_

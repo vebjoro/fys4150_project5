@@ -89,6 +89,10 @@ crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
     M = xy_steps;
     dt = time_step;
     T = time;
+
+    V = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
+    U = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
+    
 }
 
 void crank_nicolson::init_state_params(
@@ -110,7 +114,7 @@ void crank_nicolson::init_state_params(
     v_0 = v_0_;
 }
 
-void crank_nicolson::init_state(arma::cx_mat &U, arma::cx_mat &U_new)
+void crank_nicolson::init_state()
 {
     // Initialize the state
     for (int j = 0; j < M - 2; j++)
@@ -146,8 +150,60 @@ void crank_nicolson::init_state(arma::cx_mat &U, arma::cx_mat &U_new)
         }
     }
 
-
-
-    U_new = U;
-
 }
+
+// Define potential
+void crank_nicolson::potential(int slits)
+{
+    double x;
+    double y;
+
+    for (int i = 0; i < M; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            x = i * h;
+            y = j * h;
+            if ((y > 0.49) && (y < 0.51))
+            {
+                if (slits == 1)
+                {
+                    if ((x > 0.475) && (x < 0.525))
+                    {
+                        V(i, j) = arma::cx_double{0, 0};
+                    }
+                    else
+                    {
+                        V(i, j) = v_0;
+                    }
+                }
+
+                else if (slits == 2)
+                {
+                    if (((x > 0.425) && (x < 0.475))||((x > 0.525) && (x < 0.575)))
+                    {
+                        V(i, j) = arma::cx_double{0, 0};
+                    }
+                    else
+                    {
+                        V(i, j) = v_0;
+                    }
+                }
+
+                else if (slits == 3)
+                {
+                    if (((x > 3.75)&&(x<4.25))||((x > 4.75)&&(x<5.25))||((x > 5.75)&&(x<6.25)))
+                    {
+                        V(i, j) = arma::cx_double{0, 0};
+                    }
+                    else
+                    {
+                        V(i, j) = v_0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
