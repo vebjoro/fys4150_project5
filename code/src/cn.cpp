@@ -119,7 +119,7 @@ void crank_nicolson::init_state(arma::cx_mat &U, arma::cx_mat &U_new)
         {
             double x = i * h;
             double y = j * h;
-            U(i, j) = exp(-pow(x - x_c, 2) / (arma::cx_double{2, 0} \
+            U(i, j) = std::exp(-std::pow(x - x_c, 2) / (arma::cx_double{2, 0} \
             * sigma_x * sigma_x) - pow(y - y_c, 2) / (arma::cx_double{2, 0} * sigma_y * sigma_y) \
             + arma::cx_double{0, 1} * p_x * (x - x_c) \
             + arma::cx_double{0, 1} * p_y * (y - y_c));
