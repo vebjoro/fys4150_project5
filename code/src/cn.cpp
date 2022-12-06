@@ -18,13 +18,16 @@ crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
     M = xy_steps;
     dt = time_step;
     T = time;
+    n_time_steps = std::round(T / dt);
     N = (M - 2) * (M - 2);
     r = arma::cx_double{0,1} * dt / (2 * h * h);
     a = arma::cx_double{1, 0} + arma::cx_double{4, 0} * r; // 1 + 4r
     b = arma::cx_double{1, 0} - arma::cx_double{4, 0} * r; // 1 - 4r
 
     V = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
-    U = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
+    U = arma::cx_cube(M - 2, M - 2, n_time_steps, arma::fill::zeros);
+
+
 
     A = arma::cx_mat(N, N, arma::fill::zeros);
     B = arma::cx_mat(N, N, arma::fill::zeros);
@@ -59,7 +62,7 @@ void crank_nicolson::init_state()
         {
             double x = i * h;
             double y = j * h;
-            U(i, j) = std::exp(-std::pow(x - x_c, 2) / (arma::cx_double{2, 0} \
+            U(i, j, 0) = std::exp(-std::pow(x - x_c, 2) / (arma::cx_double{2, 0} \
             * sigma_x * sigma_x) - pow(y - y_c, 2) / (arma::cx_double{2, 0} * sigma_y * sigma_y) \
             + arma::cx_double{0, 1} * p_x * (x - x_c) \
             + arma::cx_double{0, 1} * p_y * (y - y_c));
@@ -73,7 +76,7 @@ void crank_nicolson::init_state()
     {
         for (int i = 0; i < M - 2; i++)
         {
-            pp = U(i, j) * conj(U(i, j));
+            pp = U(i, j, 0) * conj(U(i, j, 0));
             norm += pp.real();
         }
     }
@@ -82,7 +85,7 @@ void crank_nicolson::init_state()
     {
         for (int i = 0; i < M - 2; i++)
         {
-            U(i, j) = U(i, j) / sqrt(norm);
+            U(i, j, 0) = U(i, j, 0) / sqrt(norm);
         }
     }
 
@@ -202,10 +205,25 @@ void crank_nicolson::potential(int slits)
 }
 
 
-void crank_nicolson::update_U()
+void crank_nicolson::update_U(int n)
 {
     arma::cx_mat U_new = arma::cx_mat(M - 2, M - 2);
     arma::cx_vec u_vec = arma::cx_vec(N);
-    U_new = arma::solve(A, B * U);
-    U = U_new;
+    for (int j = 0; j < M - 2; j++)
+    {
+        for (int i = 0; i < N; i++)
+        {
+            u_vec(k(i, j, N)) = U(i, j, n-1);
+        }
+    }
+    
+    u_vec = arma::solve(A, B * u_vec);
+    for (int j = 0; j < M - 2; j++)
+    {
+        for (int i = 0; i < M - 2; i++)
+        {
+            U_new(i, j) = u_vec(k(i, j, N));
+        }
+    }
+    U.slice(n) = U_new;
 }

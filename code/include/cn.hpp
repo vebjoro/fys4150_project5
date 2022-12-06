@@ -12,6 +12,7 @@ struct crank_nicolson
     double M;
     double dt;
     double T;
+    double n_time_steps;
     double N;
     arma::cx_double r;
     arma::cx_double a;
@@ -19,9 +20,11 @@ struct crank_nicolson
 
 
     arma::cx_mat V;
-    arma::cx_mat U;
+    arma::cx_cube U;
     arma::cx_mat A;
     arma::cx_mat B;
+
+
 
     arma::cx_double x_c;
     arma::cx_double sigma_x;
@@ -50,6 +53,6 @@ struct crank_nicolson
 
     void potential(int slits);
 
-    void update_U();
+    void update_U(int n);
 };
 #endif // STATE_CN_
