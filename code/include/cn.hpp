@@ -3,7 +3,7 @@
 
 #include <armadillo>
 
-int k(int i, int j, int M);
+int k(int i, int j, int L);
 arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char sign);
 
 struct crank_nicolson

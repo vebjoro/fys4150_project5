@@ -3,10 +3,10 @@
 #include <armadillo>
 #include <complex>
 
-int k(int i, int j, int M)
+int k(int i, int j, int L)
 // Translate matrix indicies to a single index
 {
-    return i + j * M;
+    return i + j * L;
 };
 
 arma::cx_mat generate_matrix(int M, double h, double dt, arma::cx_mat V, char sign)
@@ -92,6 +92,7 @@ crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
 }
 
 void crank_nicolson::init_state_params(
+    //initialize as complex numbers with only real parts
     arma::cx_double x_c_,
     arma::cx_double sigma_x_,
     arma::cx_double p_x_,
