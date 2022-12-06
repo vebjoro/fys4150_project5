@@ -209,6 +209,7 @@ void crank_nicolson::update_U(int n)
 {
     arma::cx_mat U_new = arma::cx_mat(M - 2, M - 2);
     arma::cx_vec u_vec = arma::cx_vec(N);
+
     for (int j = 0; j < M - 2; j++)
     {
         for (int i = 0; i < N; i++)
@@ -217,6 +218,7 @@ void crank_nicolson::update_U(int n)
         }
     }
     
+
     u_vec = arma::solve(A, B * u_vec);
     for (int j = 0; j < M - 2; j++)
     {
