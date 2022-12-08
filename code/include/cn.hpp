@@ -49,10 +49,10 @@ struct crank_nicolson
 
     void generate_A_B();
 
-    void update_A_B();
-
     void potential(int slits);
 
-    void update_U(int n);
+    void step(int n);
+
+    void reset_system();
 };
 #endif // STATE_CN_
