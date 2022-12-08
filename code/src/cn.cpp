@@ -56,9 +56,9 @@ void crank_nicolson::init_state_params(
 void crank_nicolson::init_state()
 {
     // Initialize the state
-    for (int j = 0; j < M - 2; j++)
+    for (int i = 1; i <= M - 2; i++)
     {
-        for (int i = 0; i < M - 2; i++)
+        for (int j = 1; j <= M - 2; j++)
         {
 
             double x = i * h;
@@ -213,7 +213,7 @@ void crank_nicolson::step(int n)
         for (int j = 1; j <= M-2; j++)
         {
             u_vec(k(i, j, M-2)) = U(i, j, n-1);
-            std::cout<<u_vec(k(i, j, M-2))<<std::endl;
+
         }
     }
     
@@ -223,7 +223,6 @@ void crank_nicolson::step(int n)
     {
         for (int j = 1; j <= M - 2; j++)
         {
-            std::cout<<u_vec(k(i, j, M-2))<<std::endl;
             U_new(i, j) = u_vec(k(i, j, M-2));
             
         }
@@ -233,8 +232,18 @@ void crank_nicolson::step(int n)
 
 void crank_nicolson::reset_system()
 {
-    V = arma::cx_mat(M - 2, M - 2, arma::fill::zeros);
-    U = arma::cx_cube(M - 2, M - 2, n_time_steps, arma::fill::zeros);
+    V = arma::cx_mat(M, M, arma::fill::zeros);
+    U = arma::cx_cube(M, M, n_time_steps, arma::fill::zeros);
+}
+
+arma::vec crank_nicolson::probability()
+{
+    arma::vec out_vec = arma::vec(n_time_steps);
+    for (int i = 0; i < n_time_steps; i++)
+    {
+        out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)));
+    }
+    return out_vec;
 }
 
 

@@ -54,5 +54,8 @@ struct crank_nicolson
     void step(int n);
 
     void reset_system();
+
+    arma::vec probability();
+
 };
 #endif // STATE_CN_

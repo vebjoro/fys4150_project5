@@ -7,15 +7,16 @@ int main(int argc, char *argv[])
 {
     double h, dt, T, n_s;
     arma::cx_double x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0;
+    std::string outfile;
 
     // System 1
-    // h = 0.005;
-    // dt = 2.5e-5;
-    // T = 0.008;
-
-    h = 0.2;
+    h = 0.1;
     dt = 2.5e-5;
     T = 0.008;
+
+    // h = 0.2;
+    // dt = 2.5e-5;
+    // T = 0.008;
 
 
     n_s = T / dt;
@@ -38,10 +39,14 @@ int main(int argc, char *argv[])
 
     for (int i = 1; i < n_s; i++)
     {
-        
         system1.step(i);
-
     }
+
+    outfile = "data/system1_prob.bin";
+    arma::vec out_vec = system1.probability();
+    out_vec.save(outfile, arma::arma_binary);
+    std::cout<<system1.U<<std::endl;
+    
 
     // // System 2
     // h = 0.005;
