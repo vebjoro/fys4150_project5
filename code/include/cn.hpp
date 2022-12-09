@@ -57,5 +57,7 @@ struct crank_nicolson
 
     arma::vec probability();
 
+    void save_simulation(std::string outfile);
+
 };
 #endif // STATE_CN_

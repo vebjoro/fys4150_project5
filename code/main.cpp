@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     system1.init_state_params(x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0);
     system1.init_state();
-    std::cout << system1.U.slice(0) << std::endl;
+    //std::cout << system1.U.slice(0) << std::endl;
     system1.generate_A_B();
 
     system1.potential(2);
@@ -46,6 +46,11 @@ int main(int argc, char *argv[])
     outfile = "data/system1_prob.bin";
     arma::vec out_vec = system1.probability();
     out_vec.save(outfile, arma::arma_binary);
+
+    outfile = "data/system1_U.bin";
+    system1.save_simulation(outfile);
+
+
 
     // arma::cx_mat out_mat = system1.U.slice(0);
     // outfile = "data/system1_U.bin";

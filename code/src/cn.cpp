@@ -70,7 +70,7 @@ void crank_nicolson::init_state()
             + arma::cx_double{0, 1} * p_y * (y - y_c));
         }
     }
-    std::cout << U.slice(0) << std::endl;
+    //std::cout<< U.slice(0) << std::endl;
     // Normalize state
     arma::cx_double pp;
     double norm = 0;
@@ -248,9 +248,12 @@ arma::vec crank_nicolson::probability()
     for (int i = 0; i < n_time_steps; i++)
     {
         out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)));
-        std::cout << i<<" .   "<<out_vec(i) << std::endl;
+        //std::cout << i<<" .   "<<out_vec(i) << std::endl;
     }
     return out_vec;
 }
 
-
+void crank_nicolson::save_simulation(std::string outfile)
+    {
+        U.save(outfile, arma::arma_binary);
+    }
