@@ -71,7 +71,6 @@ void crank_nicolson::init_state()
             + arma::cx_double{0, 1} * p_y * (y - y_c));
         }
     }
-
     // Normalize state
     arma::cx_double pp;
     double norm = 0;

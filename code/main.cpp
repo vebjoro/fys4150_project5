@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
     system2.potential(2);
     system2.init_state();
 
+
     system2.generate_A_B();
 
     for (int i = 1; i < n_s; i++)
