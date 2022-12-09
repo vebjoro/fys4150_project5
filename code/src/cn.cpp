@@ -61,34 +61,40 @@ void crank_nicolson::init_state()
         for (int j = 1; j <= M - 2; j++)
         {
 
-            double x = i * h;
-            double y = j * h;
-            U(i, j, 0) = std::exp(-std::pow(x - x_c, 2) / (arma::cx_double{2, 0} \
-            * sigma_x * sigma_x) - pow(y - y_c, 2) / (arma::cx_double{2, 0} * sigma_y * sigma_y) \
+            arma::cx_double x = arma::cx_double{i * h, 0};
+            arma::cx_double y = arma::cx_double{j * h, 0};
+
+            U(i, j, 0) = std::exp(-(std::pow(x - x_c, 2) / (arma::cx_double{2, 0} \
+            * sigma_x * sigma_x)) - (std::pow(y - y_c, 2) / (arma::cx_double{2, 0} * sigma_y * sigma_y)) \
             + arma::cx_double{0, 1} * p_x * (x - x_c) \
             + arma::cx_double{0, 1} * p_y * (y - y_c));
         }
     }
-
+    std::cout << U.slice(0) << std::endl;
     // Normalize state
     arma::cx_double pp;
     double norm = 0;
-    for (int j = 0; j < M - 2; j++)
+    for (int i = 1; i <= M - 2; i++)
     {
-        for (int i = 0; i < M - 2; i++)
+        for (int j = 0; j <= M - 2; j++)
         {
             pp = U(i, j, 0) * conj(U(i, j, 0));
             norm += pp.real();
+
         }
     }
 
-    for (int j = 0; j < M - 2; j++)
+    double tottt = 0;
+    for (int i = 1; i <= M - 2; i++)
     {
-        for (int i = 0; i < M - 2; i++)
+        for (int j = 1; j <= M - 2; j++)
         {
-            U(i, j, 0) = U(i, j, 0) / sqrt(norm);
-        }
+
+            U(i, j, 0) = U(i, j, 0) /sqrt(norm);
+            arma::cx_double f = U(i, j, 0) * conj(U(i, j, 0));
+            tottt += f.real();        }
     }
+
 
 }
 
@@ -242,6 +248,7 @@ arma::vec crank_nicolson::probability()
     for (int i = 0; i < n_time_steps; i++)
     {
         out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)));
+        std::cout << i<<" .   "<<out_vec(i) << std::endl;
     }
     return out_vec;
 }

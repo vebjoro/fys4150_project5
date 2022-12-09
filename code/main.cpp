@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     std::string outfile;
 
     // System 1
-    h = 0.1;
+    h = 0.05;
     dt = 2.5e-5;
     T = 0.008;
 
@@ -33,9 +33,10 @@ int main(int argc, char *argv[])
 
     system1.init_state_params(x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0);
     system1.init_state();
+    std::cout << system1.U.slice(0) << std::endl;
     system1.generate_A_B();
 
-    //system1.potential() (Off for this first system)
+    system1.potential(2);
 
     for (int i = 1; i < n_s; i++)
     {
@@ -45,7 +46,11 @@ int main(int argc, char *argv[])
     outfile = "data/system1_prob.bin";
     arma::vec out_vec = system1.probability();
     out_vec.save(outfile, arma::arma_binary);
-    std::cout<<system1.U<<std::endl;
+
+    // arma::cx_mat out_mat = system1.U.slice(0);
+    // outfile = "data/system1_U.bin";
+    // out_mat.save(outfile, arma::arma_binary);
+
     
 
     // // System 2
