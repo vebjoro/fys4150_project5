@@ -242,18 +242,28 @@ void crank_nicolson::reset_system()
     U = arma::cx_cube(M, M, n_time_steps, arma::fill::zeros);
 }
 
-arma::vec crank_nicolson::probability()
+arma::vec crank_nicolson::probability_deviation()
 {
     arma::vec out_vec = arma::vec(n_time_steps);
     for (int i = 0; i < n_time_steps; i++)
     {
         out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)));
         //std::cout << i<<" .   "<<out_vec(i) << std::endl;
+
+        out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)))-1;
+
     }
     return out_vec;
 }
+
 
 void crank_nicolson::save_simulation(std::string outfile)
     {
         U.save(outfile, arma::arma_binary);
     }
+
+arma::cx_mat crank_nicolson::get_U_from_t(double t)
+{
+    int n = t / dt;
+    return U.slice(n);
+}
