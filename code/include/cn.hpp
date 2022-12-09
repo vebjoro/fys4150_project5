@@ -55,7 +55,9 @@ struct crank_nicolson
 
     void reset_system();
 
-    arma::vec probability();
+    arma::vec probability_deviation();
+
+    arma::cx_mat get_U_from_t(double t);
 
 };
 #endif // STATE_CN_
