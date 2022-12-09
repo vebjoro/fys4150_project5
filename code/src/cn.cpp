@@ -2,6 +2,7 @@
 #include <iostream>
 #include <armadillo>
 #include <complex>
+#include <cmath>
 
 int k(int i, int j, int L)
 // Translate matrix indicies to a single index (internal points)
@@ -11,7 +12,7 @@ int k(int i, int j, int L)
 
 
 
-// (!The above code should be implemented in below struct?)
+
 crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
 {
     h = 1 / xy_steps;
@@ -29,8 +30,8 @@ crank_nicolson::crank_nicolson(double xy_steps, double time_step, double time)
 
 
 
-    A = arma::cx_mat(N, N, arma::fill::zeros);
-    B = arma::cx_mat(N, N, arma::fill::zeros);
+    A = arma::sp_cx_mat(N, N);
+    B = arma::sp_cx_mat(N, N);
     
 }
 
@@ -70,7 +71,7 @@ void crank_nicolson::init_state()
             + arma::cx_double{0, 1} * p_y * (y - y_c));
         }
     }
-    std::cout << U.slice(0) << std::endl;
+
     // Normalize state
     arma::cx_double pp;
     double norm = 0;
@@ -84,15 +85,13 @@ void crank_nicolson::init_state()
         }
     }
 
-    double tottt = 0;
+
     for (int i = 1; i <= M - 2; i++)
     {
         for (int j = 1; j <= M - 2; j++)
         {
-
             U(i, j, 0) = U(i, j, 0) /sqrt(norm);
-            arma::cx_double f = U(i, j, 0) * conj(U(i, j, 0));
-            tottt += f.real();        }
+        }
     }
 
 
@@ -104,30 +103,33 @@ void crank_nicolson::generate_A_B()
     // Fill vector with r values
     arma::cx_vec r_vec;
 
-    r_vec = arma::cx_vec(N - 3, arma::fill::ones);
+    r_vec = arma::cx_vec(N - (M-2), arma::fill::ones);
     r_vec = r * r_vec;
-    A.diag(3) = r_vec;
-    A.diag(-3) = r_vec;
+    A.diag(M-2) = r_vec;
+    A.diag(-(M-2)) = r_vec;
 
     r_vec = arma::cx_vec(N - 1, arma::fill::ones);
     r_vec = r * r_vec;
     A.diag(1) = r_vec;
     A.diag(-1) = r_vec;
 
-    r_vec = arma::cx_vec(N - 3, arma::fill::ones);
+    r_vec = arma::cx_vec(N - (M-2), arma::fill::ones);
     r_vec = -r * r_vec;
-    B.diag(3) = r_vec;
-    B.diag(-3) = r_vec;
+    B.diag(M-2) = r_vec;
+    B.diag(-(M-2)) = r_vec;
 
     r_vec = arma::cx_vec(N - 1, arma::fill::ones);
     r_vec = -r * r_vec;
     B.diag(1) = r_vec;
     B.diag(-1) = r_vec;
 
+    
+
 
     // Removing corner r values (!verify this)
     for (int i = (M - 2); i < N; i += M - 2)
     {
+    
         A(i - 1, i) = arma::cx_double{0, 0};
         A(i, i - 1) = arma::cx_double{0, 0};
         B(i - 1, i) = arma::cx_double{0, 0};
@@ -136,20 +138,22 @@ void crank_nicolson::generate_A_B()
 
     arma::cx_vec diagonal_a = arma::cx_vec(N);
     arma::cx_vec diagonal_b = arma::cx_vec(N);
-
+    
 
     for (int i = 1; i <= M-2; i++)
     {
-        for (int j = 1; j < M-2; j++)
+        for (int j = 1; j <= M-2; j++)
         {
+
             diagonal_a(k(i, j, M - 2)) = a + (arma::cx_double{0, 1} * dt / arma::cx_double{2, 0}) * V(i, j);
             diagonal_b(k(i, j, M - 2)) = b - (arma::cx_double{0, 1} * dt / arma::cx_double{2, 0}) * V(i, j);
-
+            
         }
     }
 
     A.diag() = diagonal_a;
     B.diag() = diagonal_b;
+
 }
 
 // Define potential
@@ -158,16 +162,7 @@ void crank_nicolson::potential(int slits)
     double x;
     double y;
 
-    if (slits == 0)
-    {
-        V = arma::cx_mat(M, M, arma::fill::zeros);
-    }
 
-    else
-    {
-        V = arma::cx_mat(M, M, arma::fill::ones);
-        V = V * v_0;
-    }
 
     for (int i = 0; i < M; i++)
     {
@@ -175,12 +170,12 @@ void crank_nicolson::potential(int slits)
         {
             x = i * h;
             y = j * h;
-            if ((y > 0.49) && (y < 0.51))
+            if ((x > 0.49) && (x < 0.51))
             {
 
                 if (slits == 1)
                 {
-                    if ((x < 0.475) && (x > 0.525))
+                    if ((y < 0.475) && (y > 0.525))
                     {
                         V(i, j) = v_0;
                     }
@@ -188,15 +183,17 @@ void crank_nicolson::potential(int slits)
 
                 else if (slits == 2)
                 {
-                    if (((x < 0.425) && (x > 0.475))||((x < 0.525) && (x > 0.575)))
+
+                    if ((y < 0.425) || (y > 0.475&&y < 0.525) || (y > 0.575))
                     {
+
                         V(i, j) = v_0;
                     }
                 }
 
                 else if (slits == 3)
                 {
-                    if (((x < 3.75)&&(x > 4.25))||((x < 4.75)&&(x > 5.25))||((x < 5.75)&&(x > 6.25)))
+                    if (((y < 3.75)&&(y > 4.25))||((y < 4.75)&&(y > 5.25))||((y < 5.75)&&(y > 6.25)))
                     {
                         V(i, j) = v_0;
                     }
@@ -216,7 +213,7 @@ void crank_nicolson::step(int n)
 
     for (int i = 1; i <= M - 2; i++)
     {
-        for (int j = 1; j <= M-2; j++)
+        for (int j = 1; j <= M - 2; j++)
         {
             u_vec(k(i, j, M-2)) = U(i, j, n-1);
 
@@ -224,7 +221,7 @@ void crank_nicolson::step(int n)
     }
     
 
-    u_vec = arma::solve(A, B * u_vec);
+    u_vec = arma::spsolve(A,B * u_vec);
     for (int i = 1; i <= M - 2; i++)
     {
         for (int j = 1; j <= M - 2; j++)
@@ -236,26 +233,37 @@ void crank_nicolson::step(int n)
     U.slice(n) = U_new;
 }
 
-void crank_nicolson::reset_system()
-{
-    V = arma::cx_mat(M, M, arma::fill::zeros);
-    U = arma::cx_cube(M, M, n_time_steps, arma::fill::zeros);
-}
+// void crank_nicolson::reset_system()
+// {
+//     V = arma::cx_mat(M, M, arma::fill::zeros);
+//     U = arma::cx_cube(M, M, n_time_steps, arma::fill::zeros);
+// }
 
-arma::vec crank_nicolson::probability_deviation()
-{
-    arma::vec out_vec = arma::vec(n_time_steps);
-    for (int i = 0; i < n_time_steps; i++)
-    {
-        out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)))-1;
-    }
-    return out_vec;
-}
+// arma::vec crank_nicolson::probability_deviation()
+// {
+//     arma::vec out_vec = arma::vec(n_time_steps);
+//     for (int i = 0; i < n_time_steps; i++)
+//     {
+//         out_vec(i) = arma::accu(arma::abs(U.slice(i)) % arma::abs(U.slice(i)))-1;
+//     }
+//     return out_vec;
+// }
 
-arma::cx_mat crank_nicolson::get_U_from_t(double t)
-{
-    int n = t / dt;
-    return U.slice(n);
-}
+// arma::cx_mat crank_nicolson::get_U_from_t(double t)
+// {
+//     int n = std::floor(t / dt);
+
+
+//     return U.slice(n);
+// }
+
+// arma::mat crank_nicolson::get_P_mat_from_t(double t)
+// {
+//     int n = t / dt;
+//     arma::cx_mat C = arma::conj(U.slice(n)) % U.slice(n);
+//     arma::mat P = arma::real(C);
+
+//     return P;
+// }
 
 

@@ -21,8 +21,8 @@ struct crank_nicolson
 
     arma::cx_mat V;
     arma::cx_cube U;
-    arma::cx_mat A;
-    arma::cx_mat B;
+    arma::sp_cx_mat A;
+    arma::sp_cx_mat B;
 
 
 
@@ -58,6 +58,8 @@ struct crank_nicolson
     arma::vec probability_deviation();
 
     arma::cx_mat get_U_from_t(double t);
+
+    arma::mat get_P_mat_from_t(double t);
 
 };
 #endif // STATE_CN_
