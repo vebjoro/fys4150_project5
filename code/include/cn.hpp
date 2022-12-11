@@ -57,9 +57,6 @@ struct crank_nicolson
 
     arma::vec probability_deviation();
 
-    arma::cx_mat get_U_from_t(double t);
-
-    arma::mat get_P_mat_from_t(double t);
 
 };
 #endif // STATE_CN_
