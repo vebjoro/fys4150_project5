@@ -8,7 +8,7 @@ U = np.array(U).T
 print(U.shape)
 #
 #
-# TODO: ADD COLORBAR
+# TODO: ADD COLORBAR (trengs kun på siste del av tidsserien t = 0.002)
 #       ADD PROBABILITY PLOT
 #       CLEAN UP CODE
 #       SHOW WALL
