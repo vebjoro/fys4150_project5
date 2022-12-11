@@ -28,6 +28,7 @@ def plot_prob(P, filename):
     plt.grid()
     ax = plt.gca()
     ax.set_facecolor("#e6e6e6")
+    plt.tight_layout()
     plt.savefig(f"./figs/{filename}.pdf")
 
 P0 = pa.mat()

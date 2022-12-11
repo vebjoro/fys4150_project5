@@ -8,61 +8,62 @@ int main(int argc, char *argv[])
     double h, dt, T, n_s;
     arma::cx_double x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0;
     std::string outfile;
+    arma::cx_cube out_cube;
     arma::vec out_vec;
     arma::mat out_mat;
 
-    // System 1
-    h = 0.005;
-    dt = 2.5e-5;
-    T = 0.008;
+    // // System 1
+    // h = 0.005;
+    // dt = 2.5e-5;
+    // T = 0.008;
 
-    n_s = T / dt;
+    // n_s = T / dt;
 
 
-    crank_nicolson system1 = crank_nicolson(1/h, dt, T);
+    // crank_nicolson system1 = crank_nicolson(1/h, dt, T);
     
-    x_c = arma::cx_double{0.25, 0};
-    sigma_x = arma::cx_double{0.05, 0};
-    p_x = arma::cx_double{200, 0};
-    y_c = arma::cx_double{0.5, 0};
-    sigma_y = arma::cx_double{0.05, 0};
-    p_y = arma::cx_double{0, 0};
-    v_0 = arma::cx_double{0, 0};
+    // x_c = arma::cx_double{0.25, 0};
+    // sigma_x = arma::cx_double{0.05, 0};
+    // p_x = arma::cx_double{200, 0};
+    // y_c = arma::cx_double{0.5, 0};
+    // sigma_y = arma::cx_double{0.05, 0};
+    // p_y = arma::cx_double{0, 0};
+    // v_0 = arma::cx_double{0, 0};
 
-    system1.init_state_params(x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0);
-    system1.init_state();
-    system1.generate_A_B();
+    // system1.init_state_params(x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0);
+    // system1.init_state();
+    // system1.generate_A_B();
 
-    for (int i = 1; i < n_s; i++)
-    {
-        std::cout << i << std::endl;
-        system1.step(i);
-    }
+    // for (int i = 1; i < n_s; i++)
+    // {
+    //     std::cout << i << std::endl;
+    //     system1.step(i);
+    // }
 
-    outfile = "data/system1_P_0.bin";
-    out_vec = system1.probability_deviation();
-    out_vec.save(outfile, arma::arma_binary);
+    // outfile = "data/system1_P_0.bin";
+    // out_vec = system1.probability_deviation();
+    // out_vec.save(outfile, arma::arma_binary);
 
-    system1.reset_system();
+    // system1.reset_system();
 
     
 
-    // System 1 with barrier
-    sigma_y = 0.10;
-    v_0 = arma::cx_double{1e10, 0};
-    system1.init_state_params(x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0);
-    system1.init_state();
+    // // System 1 with barrier
+    // sigma_y = 0.10;
+    // v_0 = arma::cx_double{1e10, 0};
+    // system1.init_state_params(x_c, sigma_x, p_x, y_c, sigma_y, p_y, v_0);
+    // system1.init_state();
 
-    for (int i = 1; i < n_s; i++)
-    {
-        std::cout << i << std::endl;
+    // for (int i = 1; i < n_s; i++)
+    // {
+    //     std::cout << i << std::endl;
 
-        system1.step(i);
-    }
+    //     system1.step(i);
+    // }
 
-    outfile = "data/system1_P_1.bin";
-    out_vec = system1.probability_deviation();
-    out_vec.save(outfile, arma::arma_binary);
+    // outfile = "data/system1_P_1.bin";
+    // out_vec = system1.probability_deviation();
+    // out_vec.save(outfile, arma::arma_binary);
 
     // // System 2
     h = 0.005;
@@ -95,13 +96,52 @@ int main(int argc, char *argv[])
     }
 
     outfile = "data/system2_U.bin";
-    arma::cx_cube out_cube = system2.U;
+    out_cube = system2.U;
     out_cube.save(outfile, arma::arma_binary);
 
     outfile = "data/system2_V.bin";
     out_mat = arma::real(system2.V);
     out_mat.save(outfile, arma::arma_binary);
 
+
+    // System 2.1 (1 slit)
+    system2.reset_system();
+    system2.potential(1);
+    system2.init_state();
+    system2.generate_A_B();
+
+    for (int i = 1; i < n_s; i++)
+    {
+        system2.step(i);
+    }
+
+    outfile = "data/system2.1_U.bin";
+    out_cube = system2.U;
+    out_cube.save(outfile, arma::arma_binary);
+
+    outfile = "data/system2.1_V.bin";
+    out_mat = arma::real(system2.V);
+    out_mat.save(outfile, arma::arma_binary);
+
+
+    // System 2.3 (3 slits)
+    system2.reset_system();
+    system2.potential(3);
+    system2.init_state();
+    system2.generate_A_B();
+
+    for (int i = 1; i < n_s; i++)
+    {
+        system2.step(i);
+    }
+
+    outfile = "data/system2.3_U.bin";
+    out_cube = system2.U;
+    out_cube.save(outfile, arma::arma_binary);
+
+    outfile = "data/system2.3_V.bin";
+    out_mat = arma::real(system2.V);
+    out_mat.save(outfile, arma::arma_binary);
 
 
 
