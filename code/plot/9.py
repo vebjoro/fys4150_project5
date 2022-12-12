@@ -5,8 +5,8 @@ import pyarma as pa
 
 
 # Fontsize
-label_fontsize = 16
-ticks_fontsize = 16
+label_fontsize = 22
+ticks_fontsize = 22
 
 
 # 2 SLIT
@@ -18,7 +18,7 @@ U = np.multiply(U, U.conj())
 
 U_slice = U[:,:,-1]
 U_slice = U_slice.real
-print(U_slice.shape)
+
 indx = int(np.round(0.8*len(U_slice)))
 
 tot = 0
@@ -28,12 +28,14 @@ for i in range(len(U_slice)):
 fig = plt.figure(figsize=(6, 4.5))
 plt.plot(range(len(U_slice)), U_slice[:,indx]/tot, color="#8a1629", alpha=0.8, linewidth=2.0)
 plt.xlabel(r"$y$", fontsize=label_fontsize)
-plt.ylabel(r"$p(y \mid x=0.8 ; t=0.002)$", fontsize=label_fontsize)
 plt.xticks(fontsize=ticks_fontsize)
 plt.yticks(fontsize=ticks_fontsize)
+plt.title(r"$2$ slits", fontsize=label_fontsize)
 plt.grid()
 ax = plt.gca()
 ax.set_facecolor("#e6e6e6")
+ax.xaxis.set_major_locator(plt.MaxNLocator(4))
+ax.yaxis.set_major_locator(plt.MaxNLocator(4))
 plt.tight_layout()
 plt.savefig("./figs/2_slit.pdf")
 
@@ -48,7 +50,7 @@ U = np.multiply(U, U.conj())
 
 U_slice = U[:,:,-1]
 U_slice = U_slice.real
-print(U_slice.shape)
+
 indx = int(np.round(0.8*len(U_slice)))
 
 tot = 0
@@ -61,9 +63,12 @@ plt.xlabel(r"$y$", fontsize=label_fontsize)
 plt.ylabel(r"$p(y \mid x=0.8 ; t=0.002)$", fontsize=label_fontsize)
 plt.xticks(fontsize=ticks_fontsize)
 plt.yticks(fontsize=ticks_fontsize)
+plt.title(r"$1$ slit", fontsize=label_fontsize)
 plt.grid()
 ax = plt.gca()
 ax.set_facecolor("#e6e6e6")
+ax.xaxis.set_major_locator(plt.MaxNLocator(4))
+ax.yaxis.set_major_locator(plt.MaxNLocator(4))
 plt.tight_layout()
 plt.savefig("./figs/1_slit.pdf")
 
@@ -78,7 +83,7 @@ U = np.multiply(U, U.conj())
 
 U_slice = U[:,:,-1]
 U_slice = U_slice.real
-print(U_slice.shape)
+
 indx = int(np.round(0.8*len(U_slice)))
 
 tot = 0
@@ -88,11 +93,13 @@ for i in range(len(U_slice)):
 fig = plt.figure(figsize=(6, 4.5))
 plt.plot(range(len(U_slice)), U_slice[:,indx]/tot, color="#8a1629", alpha=0.8, linewidth=2.0)
 plt.xlabel(r"$y$", fontsize=label_fontsize)
-plt.ylabel(r"$p(y \mid x=0.8 ; t=0.002)$", fontsize=label_fontsize)
 plt.xticks(fontsize=ticks_fontsize)
 plt.yticks(fontsize=ticks_fontsize)
+plt.title(r"$3$ slits", fontsize=label_fontsize)
 plt.grid()
 ax = plt.gca()
 ax.set_facecolor("#e6e6e6")
+ax.xaxis.set_major_locator(plt.MaxNLocator(4))
+ax.yaxis.set_major_locator(plt.MaxNLocator(4))
 plt.tight_layout()
 plt.savefig("./figs/3_slit.pdf")
