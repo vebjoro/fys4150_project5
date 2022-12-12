@@ -13,23 +13,19 @@ U = np.array(U).T
 V = pa.mat()
 V.load("./data/system2_V.bin")
 V = np.array(V).T
-# Set small values to nan
-V[V < 100] = np.nan
-#
-#
-# TODO: ADD COLORBAR (trengs kun på siste del av tidsserien t = 0.002)
-#       ADD PROBABILITY PLOT
-#       CLEAN UP CODE
-#       SHOW WALL
-#
 
-# Fontsize
+# Remove parts of V that are not the barrier for transparency
+V[V < 100] = np.nan
+
+# Fontsize settings
 label_fontsize = 23
 ticks_fontsize = 20
 tick_font_size = 17
 
 
-# PROBABILITY WAVEFUNCTION #
+# PLOT PROBABILITY WAVE FUNCTION
+
+# Plot probability wave function at t = 0.000
 fig = plt.figure(figsize=(6, 4.5))
 P = np.sqrt(np.multiply(U[:,:,0], U[:,:,0].conj()))
 plt.imshow(P.real, extent=[0,1,0,1])
@@ -45,7 +41,7 @@ ax.yaxis.set_ticks([0, 0.5, 1])
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_000.pdf")
 
-
+# Plot probability wave function at t = 0.001
 fig = plt.figure(figsize=(6, 4.5))
 P = np.sqrt(np.multiply(U[:,:,39], U[:,:,39].conj()))
 plt.imshow(P.real, extent=[0,1,0,1])
@@ -60,7 +56,7 @@ ax.yaxis.set_ticks([0, 0.5, 1])
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_001.pdf")
 
-
+# Plot probability wave function at t = 0.002
 fig = plt.figure(figsize=(6, 4.5))
 P = np.sqrt(np.multiply(U[:,:,79], U[:,:,79].conj()))
 im = plt.imshow(P.real, extent=[0,1,0,1])
@@ -84,7 +80,10 @@ cbar.remove()
 # Reset matplotlib
 plt.rcParams.update(plt.rcParamsDefault)
 
+
 # REAL PART #
+
+# Plot real part of wave function at t = 0.000
 fig = plt.figure(figsize=(6, 4.5))
 P = U[:,:,0].real
 plt.imshow(P, extent=[0,1,0,1])
@@ -100,7 +99,7 @@ ax.yaxis.set_ticks([0, 0.5, 1])
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_000_r.pdf")
 
-
+# Plot real part of wave function at t = 0.001
 fig = plt.figure(figsize=(6, 4.5))
 P = U[:,:,39].real
 plt.imshow(P, extent=[0,1,0,1])
@@ -115,7 +114,7 @@ ax.yaxis.set_ticks([0, 0.5, 1])
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_001_r.pdf")
 
-
+# Plot real part of wave function at t = 0.002
 fig = plt.figure(figsize=(6, 4.5))
 P = U[:,:,79].real
 im = plt.imshow(P, extent=[0,1,0,1])
@@ -136,9 +135,13 @@ plt.tight_layout()
 plt.savefig(f"./figs/system2_U_002_r.pdf")
 cbar.remove()
 
+# Reset matplotlib
+plt.rcParams.update(plt.rcParamsDefault)
 
 
 # IMAGINARY PART #
+
+# Plot imaginary part of wave function at t = 0.000
 fig = plt.figure(figsize=(6, 4.5))
 P = U[:,:,0].imag
 plt.imshow(P, extent=[0,1,0,1])
@@ -155,6 +158,7 @@ plt.tight_layout()
 plt.savefig(f"./figs/system2_U_000_i.pdf")
 
 
+# Plot imaginary part of wave function at t = 0.001
 fig = plt.figure(figsize=(6, 4.5))
 P = U[:,:,39].imag
 plt.imshow(P, extent=[0,1,0,1])
@@ -169,7 +173,7 @@ ax.yaxis.set_ticks([0, 0.5, 1])
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_001_i.pdf")
 
-
+# Plot imaginary part of wave function at t = 0.002
 fig = plt.figure(figsize=(6, 4.5))
 P = U[:,:,79].imag
 im = plt.imshow(P, extent=[0,1,0,1])
@@ -189,9 +193,5 @@ cbar.update_ticks()
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_002_i.pdf")
 cbar.remove()
-
-
-
-
 
 

@@ -5,7 +5,6 @@
 
 int k(int i, int j, int L);
  
-
 struct crank_nicolson
 {
     double h;
@@ -18,13 +17,10 @@ struct crank_nicolson
     arma::cx_double a;
     arma::cx_double b;
 
-
     arma::cx_mat V;
     arma::cx_cube U;
     arma::sp_cx_mat A;
     arma::sp_cx_mat B;
-
-
 
     arma::cx_double x_c;
     arma::cx_double sigma_x;
@@ -56,7 +52,5 @@ struct crank_nicolson
     void reset_system();
 
     arma::vec probability_deviation();
-
-
 };
 #endif // STATE_CN_
