@@ -1,5 +1,5 @@
 # 2D simulation of The Double Slit Experiment
-![U](https://github.com/vebjoro/fys4150_project5/blob/dev/figs/U.gif){:align="center"}
+![U](https://github.com/vebjoro/fys4150_project5/blob/dev/figs/U.gif)
 
 This project aims to simulate the Double Slit Experiment using the Crank-Nicolson method for solving the Schrödinger eqution.
 
