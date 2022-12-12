@@ -1,5 +1,5 @@
 # 2D simulation of The Double Slit Experiment
-![cat playing with yarn](https://raw.githubusercontent.com/vebjoro/fys4150_project5/dev/code/figs/U.gif)
+![U](https://github.com/vebjoro/fys4150_project5/blob/dev/figs/U.gif)
 
 This project aims to simulate the Double Slit Experiment using the Crank-Nicolson method for solving the Schrödinger eqution.
 
@@ -7,13 +7,17 @@ This project aims to simulate the Double Slit Experiment using the Crank-Nicolso
 Make sure all dependencies are installed. To compile C++ files, run the following command:
 
 
-To run the python scrips, run the following commands with \/code` as working directory:
+To run the python scrips, run the following commands:
 ```
 python3 plot plot/prob.py
 ```
 
 ```
 python3 plot plot/U.py
+```
+
+```
+python3 plot plot/9.py
 ```
 
 ```
