@@ -32,7 +32,7 @@ struct crank_nicolson
 
     crank_nicolson(double h, double dt, double T);
 
-    void init_state_params(
+    void wave_packet_params(
         arma::cx_double x_c,
         arma::cx_double sigma_x,
         arma::cx_double p_x,
@@ -41,7 +41,7 @@ struct crank_nicolson
         arma::cx_double p_y,
         arma::cx_double v_0);
 
-    void init_state();
+    void wave_packet();
 
     void generate_A_B();
 
