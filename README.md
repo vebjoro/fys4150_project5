@@ -8,7 +8,9 @@ This project aims to simulate the Double Slit Experiment using the Crank-Nicolso
 ## How to run this code?
 Make sure all dependencies are installed. To compile C++ files, run the following command:
 
-
+```
+make cn
+```
 To run the python scrips, run the following commands:
 ```
 python3 plot plot/prob.py
