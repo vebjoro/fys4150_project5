@@ -7,7 +7,7 @@ label_fontsize = 16
 ticks_fontsize = 16
 
 
-def plot_prob(P, filename):
+def plot_prob(P, filename, title):
     """
     Plot the probability deviation for a given system.
     """
@@ -17,12 +17,14 @@ def plot_prob(P, filename):
 
     # Plot
     fig = plt.figure(figsize=(6, 4.5))
-    plt.plot(range(n), P, color="#8a1629", alpha=0.8, linewidth=2.0)
-    plt.xlabel('Number of iterations', fontsize=label_fontsize)
-    plt.ylabel('Total probability deviation', fontsize=label_fontsize)
+    plt.plot(np.linspace(0,0.002,n), P, color="#8a1629", alpha=0.8, linewidth=2.0)
+    plt.xlabel('Time [-]', fontsize=label_fontsize)
+    plt.ylabel('Probability deviation', fontsize=label_fontsize)
     plt.xticks(fontsize=ticks_fontsize)
     plt.yticks(fontsize=ticks_fontsize)
     plt.grid()
+    plt.title(title, fontsize=label_fontsize)
+    plt.rc('font', **{'size':'24'})
     ax = plt.gca()
     ax.set_facecolor("#e6e6e6")
     plt.tight_layout()
@@ -39,5 +41,5 @@ P1 = pa.mat()
 P1.load("./data/system1_P_1.bin")
 
 # Plot
-plot_prob(P0, "system1_P_0")
-plot_prob(P1, "system1_P_1")
+plot_prob(P0, "system1_P_0", r"No potential with $\sigma_y = 0.05$")
+#plot_prob(P1, "system1_P_1", r"Double slit potential with $\sigma_y = 0.10$")

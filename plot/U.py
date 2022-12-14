@@ -18,12 +18,12 @@ V = np.array(V).T
 V[V < 100] = np.nan
 
 # Fontsize settings
-label_fontsize = 23
-ticks_fontsize = 20
-tick_font_size = 17
+label_fontsize = 25
+ticks_fontsize = 22
+tick_font_size = 19
 
 
-# PLOT PROBABILITY WAVE FUNCTION
+# # PLOT PROBABILITY WAVE FUNCTION
 
 # Plot probability wave function at t = 0.000
 fig = plt.figure(figsize=(6, 4.5))
@@ -73,6 +73,7 @@ cbar.ax.tick_params(labelsize=tick_font_size)
 tick_locator = ticker.MaxNLocator(nbins=5)
 cbar.locator = tick_locator
 cbar.update_ticks()
+cbar.set_label(r"$\sqrt{p}$", fontsize=label_fontsize)
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_002.pdf")
 cbar.remove()
@@ -131,6 +132,7 @@ cbar.ax.tick_params(labelsize=tick_font_size)
 tick_locator = ticker.MaxNLocator(nbins=5)
 cbar.locator = tick_locator
 cbar.update_ticks()
+cbar.set_label(r"Re($p$)", fontsize=label_fontsize)
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_002_r.pdf")
 cbar.remove()
@@ -190,8 +192,25 @@ cbar.ax.tick_params(labelsize=tick_font_size)
 tick_locator = ticker.MaxNLocator(nbins=5)
 cbar.locator = tick_locator
 cbar.update_ticks()
+cbar.set_label(r"Im($p$)", fontsize=label_fontsize)
 plt.tight_layout()
 plt.savefig(f"./figs/system2_U_002_i.pdf")
 cbar.remove()
 
 
+# Plot probability wave function at t = 0.001 Cropped
+fig = plt.figure(figsize=(6, 4.5))
+P = np.sqrt(np.multiply(U[75:125,75:125,39], U[75:125,75:125,39].conj()))
+V = V[75:125, 75:125]
+im = plt.imshow(P.real, extent=[0.375, 0.625, 0.375, 0.625])
+plt.imshow(V,extent=[0.375, 0.625, 0.375, 0.625], cmap = ListedColormap(['black']))
+plt.xlabel(r'$x$', fontsize=label_fontsize-6)
+plt.xticks(fontsize=ticks_fontsize-8, rotation=40)
+plt.yticks(fontsize=ticks_fontsize-8, rotation=40)
+plt.title("t = 0.001", fontsize=label_fontsize-7)
+ax = plt.gca()
+cbar = fig.colorbar(im)
+cbar.ax.tick_params(labelsize=tick_font_size)
+cbar.set_label(r"$\sqrt{p}$", fontsize=label_fontsize+1)
+plt.tight_layout()
+plt.savefig(f"./figs/system2_U_001_CROP.pdf")
