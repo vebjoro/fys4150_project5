@@ -1,10 +1,11 @@
+//testing github setup
 #ifndef STATE_CN_
 #define STATE_CN_
 
 #include <armadillo>
 
 int k(int i, int j, int L);
- 
+
 struct crank_nicolson
 {
     double h;
